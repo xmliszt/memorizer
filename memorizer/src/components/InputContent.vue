@@ -109,7 +109,6 @@ export default {
             return url;
           }
         } catch (err) {
-          console.log(err.message);
           this.error_msg = "Invalid URL";
         }
       } else {

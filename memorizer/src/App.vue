@@ -19,6 +19,10 @@ html, body {
   margin: 0px;
 }
 
+.el-select-dropdown__item {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
