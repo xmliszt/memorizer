@@ -19,6 +19,8 @@ html, body {
   margin: 0px;
 }
 
+.el-notification__content,
+.el-message__content,
 .el-select-dropdown__item {
   font-family: Avenir, Helvetica, Arial, sans-serif;
 }

@@ -2,7 +2,7 @@
   <div class="login-page" @keypress="onEnter">
     <el-form ref="login_form" :model="login_form" status-icon :rules="rules" label-width="130px">
       <el-form-item label="Email" prop="email">
-        <el-input v-model="login_form.email" placeholder="Input email address.." clearable></el-input>
+        <el-input prefix-icon="el-icon-message" v-model="login_form.email" placeholder="Input email address.." clearable></el-input>
       </el-form-item>
       <el-form-item label="Password" prop="pwd">
         <el-input
