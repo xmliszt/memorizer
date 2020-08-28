@@ -1,7 +1,7 @@
 <template>
   <div class="header-section">
     <div class="signout-holder" v-show="signOutVisible">
-      <span class="username">{{ username }}</span>
+      <div class="username">{{ username }}</div>
       <el-tooltip effect="dark" content="Signout" placement="left">
         <el-button type="danger" icon="el-icon-error" circle @click="signout"></el-button>
       </el-tooltip>
@@ -86,7 +86,7 @@ export default {
     },
     goHome() {
       router.push("/");
-    }
+    },
   },
   created() {
     app.auth().onAuthStateChanged((user) => {
@@ -111,7 +111,6 @@ export default {
 
 <style scoped>
 .header-section {
-  width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -119,10 +118,10 @@ export default {
 }
 .header-block {
   width: 100vw;
-  height: 100px;
+  height: 15vh;
   background-color: #606266;
   color: #fff;
-  padding-top: 20px;
+  padding-top: 3vh;
   transition: opacity 0.2s;
 }
 .header-block:hover {
@@ -131,7 +130,7 @@ export default {
   transition: opacity 0.2s;
 }
 .Heading {
-  font-size: 40px;
+  font-size: 5vh;
   font-weight: 700;
 }
 .Subtitle {
@@ -142,18 +141,25 @@ export default {
   position: absolute;
   display: flex;
   align-items: center;
-  top: 30px;
-  right: 30px;
+  top: 5vh;
+  right: 5vh;
   z-index: 999;
 }
 .home-holder {
   position: absolute;
-  top: 30px;
-  left: 30px;
+  top: 5vh;
+  left: 5vh;
   z-index: 999;
 }
 .username {
   color: #fff;
   margin-right: 20px;
+}
+
+@media (max-width: 500px) {
+  .username {
+    margin-right: 0px;
+    display: none;
+  }
 }
 </style>

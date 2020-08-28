@@ -17,10 +17,9 @@ export default {
   bottom: 0px;
   left: 0px;
   right: 0px;
-  width: 100vw;
-  height: 30px;
-  padding: 5px;
-  font-size: 10px;
+  height: 10vh;
+  padding: 1vh;
+  font-size: 2vh;
   background-color: #606266;
   color: #fff;
   text-align: center;

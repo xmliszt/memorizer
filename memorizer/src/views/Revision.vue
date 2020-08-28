@@ -26,20 +26,40 @@
 
 <script>
 import { auth } from "./../../firebase";
-import { fadeMemory, gainMemory, getSingleMemory } from "@/controllers/revisionController";
+import {
+  fadeMemory,
+  gainMemory,
+  getSingleMemory,
+  getNextDocID,
+} from "@/controllers/dbController";
 export default {
   data() {
     return {
-      data: null,
+      data: {},
       answerVisible: false,
       loading: false,
     };
   },
   methods: {
+    async goToNextMemory() {
+      var next_doc_id = this.$route.query.next;
+      if (next_doc_id == "end") {
+        router.push("/done");
+      } else {
+        var result = await getNextDocID(next_doc_id);
+        if (result.success) {
+          var next_next_id = result.data;
+          router.push(`/revision/${next_doc_id}?next=${next_next_id}`);
+        } else {
+          this.$message.error(`${result.code}: ${result.data}`);
+        }
+      }
+    },
     async reviseAgain() {
       var result = await fadeMemory(this.$route.params.id, this.data.revised);
       if (result.success) {
         this.$message.warning("Memory has slightly faded~");
+        this.goToNextMemory();
       } else {
         if (result.code == "Not logged in") {
           this.$notify.warning(result.message);
@@ -55,6 +75,7 @@ export default {
       var result = await gainMemory(this.$route.params.id, this.data.revised);
       if (result.success) {
         this.$message.success("Memory has been improved!");
+        this.goToNextMemory();
       } else {
         if (result.code == "Not logged in") {
           this.$notify.warning(result.message);
@@ -66,10 +87,8 @@ export default {
         }
       }
     },
-  },
-  mounted() {
-    this.loading = true;
-    setTimeout(async () => {
+    async getMemory() {
+      this.loading = true;
       var user = auth.currentUser;
       if (!user) {
         this.loading = false;
@@ -85,18 +104,28 @@ export default {
           this.$message.error(`${result.code}: ${result.data}`);
         }
       }
-    }, 1000);
+    },
+  },
+  mounted() {
+    setTimeout(() => {
+      this.getMemory();
+    }, 1500);
   },
 };
 </script>
 
 <style scoped>
 .revision {
-  height: 50vh;
+  width: 100%;
+  height: 65vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
+}
+
+.card-holder {
+  z-index: 999;
 }
 
 .question-section {

@@ -7,6 +7,7 @@ import QAInput from '../components/QAInput.vue'
 import Login from '../views/Login.vue'
 import Memory from '../views/Memory.vue'
 import Revision from '../views/Revision.vue'
+import Donezo from '../components/Donezo.vue'
 
 Vue.use(VueRouter)
 
@@ -47,6 +48,11 @@ const routes = [
     path: '/revision/:id',
     name: 'Revision',
     component: Revision
+  },
+  {
+    path: '/done',
+    name: "Donezo",
+    component: Donezo
   }
 ]
 
