@@ -77,7 +77,7 @@ export default {
         .signOut()
         .then(() => {
           this.$message.success("Sign out successfully!");
-          router.push("/");
+          router.push({name: "Home"});
         })
         .catch((err) => {
           console.error(err);
@@ -85,7 +85,7 @@ export default {
         });
     },
     goHome() {
-      router.push("/");
+      router.push({name: "Home"});
     },
   },
   created() {
@@ -118,7 +118,7 @@ export default {
 }
 .header-block {
   width: 100vw;
-  height: 15vh;
+  height: 20vh;
   background-color: #606266;
   color: #fff;
   padding-top: 3vh;

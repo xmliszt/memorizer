@@ -128,6 +128,6 @@ export default {
 
 <style scoped>
 .el-input {
-  width: 300px;
+  width: 60vw;
 }
 </style>

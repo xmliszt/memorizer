@@ -114,6 +114,6 @@ export default {
 <style scoped>
 .el-input,
 .el-textarea {
-  width: 70vw;
+  width: 60vw;
 }
 </style>

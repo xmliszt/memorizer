@@ -13,6 +13,8 @@ export default {
 
 <style scoped>
 .footer {
+  width: 100vw;
+  max-width: 100%;
   position: fixed;
   bottom: 0px;
   left: 0px;

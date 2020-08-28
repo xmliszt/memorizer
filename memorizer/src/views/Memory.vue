@@ -2,10 +2,10 @@
   <div class="memory" v-loading="loading">
     <div class="empty-warning" v-show="empty">
       You have no recorded memory.
-      <el-link type="warning" href="/">Go and add some first!</el-link>
+      <el-link type="warning" @click="goHome">Go and add some first!</el-link>
     </div>
-    <div class="memory-table">
-      <el-table :data="memoryData" style="width: 100%" height="65vh" max-height="70vh">
+    <div class="memory-table" v-show="!empty">
+      <el-table :data="memoryData" style="width: 100%" height="60vh" max-height="65vh">
         <el-table-column label="S/N" width="80" sortable>
           <template slot-scope="scope">
             <el-tooltip effect="dark" placement="right" :content="scope.row.id">
@@ -88,6 +88,9 @@ export default {
     };
   },
   methods: {
+    goHome() {
+      router.push({name: "Home"});
+    },
     async revise(doc_id) {
       var result = await getNextDocID(doc_id);
       var next_doc_id = "";
@@ -114,7 +117,7 @@ export default {
       if (!user) {
         this.loading = false;
         this.$notify.warning("You are not logged in!");
-        router.push("/");
+        router.push({name: "Home"});
       } else {
         var result = await getMemory(user.uid);
         this.loading = false;

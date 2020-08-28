@@ -88,14 +88,14 @@ export default {
   position: absolute;
   left: 25vw;
   right: 25vw;
-  top: 150px;
+  top: 23vh;
 }
 
 .option-holder-after {
   z-index: 999;
   position: absolute;
-  top: 30px;
-  left: 30px;
+  top: 5vh;
+  left: 5vh;
 }
 
 .el-select {
