@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Login from '../views/Login.vue'
+import Signup from '../views/Signup.vue'
 import LinkInput from '../components/LinkInput.vue'
 import QAInput from '../components/QAInput.vue'
+import Login from '../views/Login.vue'
+import Memory from '../views/Memory.vue'
 
 Vue.use(VueRouter)
 
@@ -26,9 +28,19 @@ const routes = [
     ]
   },
   {
+    path: '/signup',
+    name: 'Signup',
+    component: Signup
+  },
+  {
     path: '/login',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/memory/:uid',
+    name: 'Memory',
+    component: Memory
   }
 ]
 

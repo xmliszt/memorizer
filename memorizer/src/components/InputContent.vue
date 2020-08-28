@@ -2,7 +2,7 @@
   <div class="input-content">
     <div class="input-content-holder">
       <transition name="fade">
-        <div v-show="option_before_visible" class="option-holder-before">
+        <div v-show="centralise" class="option-holder-before">
           <el-select v-model="option">
             <el-option
               v-for="item in options"
@@ -14,7 +14,7 @@
         </div>
       </transition>
       <transition name="fade">
-        <div v-show="option_after_visible" class="option-holder-after">
+        <div v-show="!centralise" class="option-holder-after">
           <el-select v-model="option">
             <el-option
               v-for="item in options"
@@ -49,12 +49,11 @@ export default {
     };
   },
   computed: {
-    option_before_visible() {
-      return this.option === "";
-    },
-    option_after_visible() {
-      return this.option != "";
-    },
+    centralise() {
+      var route = this.$route.name;
+      if (route == "Link" || route == "QA") return false;
+      return true;
+    }
   },
   watch: {
     option() {
@@ -68,11 +67,12 @@ export default {
 <style>
 .input-content {
   font-size: 20px;
+  width: 80vw;
 }
 .input-content-holder {
   text-align: center;
   padding: 10px;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .display-link {
@@ -85,17 +85,17 @@ export default {
 
 .option-holder-before {
   z-index: 999;
-  position: fixed;
+  position: absolute;
   left: 25vw;
   right: 25vw;
-  top: 120px;
+  top: 150px;
 }
 
 .option-holder-after {
   z-index: 999;
-  position: fixed;
-  top: 20px;
-  right: 20px;
+  position: absolute;
+  top: 30px;
+  left: 30px;
 }
 
 .el-select {
@@ -104,7 +104,7 @@ export default {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s;
+  transition: opacity 0.2s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;

@@ -2,7 +2,12 @@
   <div class="login-page" @keypress="onEnter">
     <el-form ref="login_form" :model="login_form" status-icon :rules="rules" label-width="130px">
       <el-form-item label="Email" prop="email">
-        <el-input prefix-icon="el-icon-message" v-model="login_form.email" placeholder="Input email address.." clearable></el-input>
+        <el-input
+          prefix-icon="el-icon-message"
+          v-model="login_form.email"
+          placeholder="Input email address.. (Google account or other emails)"
+          clearable
+        ></el-input>
       </el-form-item>
       <el-form-item label="Password" prop="pwd">
         <el-input
@@ -11,17 +16,18 @@
           v-model="login_form.pwd"
           placeholder="Input your password..."
           show-password
+          clearable
         ></el-input>
       </el-form-item>
-      <el-form-item label="Repeat Password" prop="rpwd">
-        <el-input
-          type="password"
-          autocomplete="off"
-          v-model="login_form.rpwd"
-          placeholder="Repeat your password..."
-          show-password
-        ></el-input>
-      </el-form-item>
+      <div class="dont-have-account">
+        <el-link
+          href="/signup"
+          type="primary"
+        >Don't have an account? Create one!</el-link>
+      </div>
+      <div class="dont-have-account">
+        <el-link type="warning" @click="signInWithGoogle">Sign in with Google account!</el-link>
+      </div>
       <div class="btn-holder">
         <el-button type="info" @click="submit">Login</el-button>
       </div>
@@ -30,55 +36,33 @@
 </template>
 
 <script>
-import { checkpwd } from "@/controllers/loginController";
+import { app, provider } from "./../../firebase";
+import firebase from '@firebase/app';
 export default {
   data() {
-    var checkpwd2 = (rule, rpwd, callback) => {
-      if (rpwd != this.login_form.pwd) {
-        callback("Passwords do not match!");
-      } else {
-        callback();
-      }
-    };
     return {
       login_form: {
         email: "",
         pwd: "",
-        rpwd: "",
       },
       rules: {
         email: [
           {
             required: true,
-            message: "Please input your email address!",
+            message: "Please input your email address...",
             trigger: "blur",
           },
           {
             type: "email",
-            message: "Please input valid email address!",
-            trigger: "blur",
+            message: "Invalid email format!",
+            trigger: "change",
           },
         ],
         pwd: [
           {
             required: true,
-            message: "Please input password!",
+            message: "Please input your password...",
             trigger: "blur",
-          },
-          {
-            validator: checkpwd,
-            trigger: ["blur", "change"],
-          },
-        ],
-        rpwd: [
-          {
-            required: true,
-            message: "Please repeat your password!",
-            trigger: "blur",
-          },
-          {
-            validator: checkpwd2,
-            trigger: ["blur", "change"],
           },
         ],
       },
@@ -93,13 +77,30 @@ export default {
     submit() {
       this.$refs.login_form.validate((valid) => {
         if (valid) {
-          this.$message.info("submit!");
+          app.auth().signInWithEmailAndPassword(this.login_form.email, this.login_form.pwd).catch(e => {
+            var errorCode = e.code;
+            var errorMessage = e.message;
+            this.$notify.error(errorCode + ": " + errorMessage);
+          })
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
+    signInWithGoogle() {
+      firebase.auth().signInWithPopup(provider).then(result => {
+        var token = result.credential.accessToken;
+        var user = result.user;
+        this.$message.info(`User[${user.email}] signed in with token: ${token}`);
+        console.log(user);
+      }).catch(err => {
+        var errorCode = err.code;
+        var errorMessage = err.message;
+        var email = err.email;
+        this.$notify.error(`Email [${email}] failed to login with error[${errorCode}]: ${errorMessage}`);
+      })
+    }
   },
 };
 </script>
@@ -120,5 +121,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.dont-have-account {
+  text-align: center;
+  margin-bottom: 20px;
 }
 </style>

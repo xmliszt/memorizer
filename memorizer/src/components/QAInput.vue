@@ -1,9 +1,8 @@
 <template>
-  <div>
+  <div @keypress="onEnter">
     <el-form
       ref="qa_form"
-      :inline="true"
-      :model="qaForm"
+      :model="qa_form"
       :rules="qa_rules"
       label-width="100px"
       style="width: 100%"
@@ -12,16 +11,17 @@
         <el-input
           class="input-element"
           placeholder="Input your question..."
-          v-model="qaForm.q"
+          v-model="qa_form.q"
           clearable
         ></el-input>
       </el-form-item>
       <el-form-item label="Answer" prop="a">
         <el-input
           class="input-element"
+          type="textarea"
+          :rows="5"
           placeholder="Input your answer..."
-          v-model="qaForm.a"
-          type="url"
+          v-model="qa_form.a"
           clearable
         ></el-input>
       </el-form-item>
@@ -29,25 +29,27 @@
     <div>
       <p>
         <span class="display-title">Question:</span>
-        {{ qaForm.q }}
+        {{ qa_form.q }}
       </p>
       <p>
         <span class="display-title">Answer:</span>
-        {{ qaForm.a }}
+        {{ qa_form.a }}
       </p>
     </div>
   </div>
 </template>
 
 <script>
+import { app, db } from "./../../firebase";
+import router from "@/router";
 export default {
   data() {
     return {
-      qaForm: {
+      qa_form: {
         q: "",
         a: "",
       },
-      
+
       qa_rules: {
         q: [
           {
@@ -64,15 +66,44 @@ export default {
           },
         ],
       },
-    }
+    };
   },
   methods: {
     onEnter(e) {
+      var user = app.auth().currentUser;
       if (e.charCode === 13) {
-        if (this.option === "") {
-          this.$notify.warning("Please select an option first!");
-        } else if (this.option === "link") {
-        } else if (this.option === "q_a") {
+        if (user) {
+          this.$refs.qa_form.validate((valid) => {
+            if (valid) {
+              var q = this.qa_form.q;
+              var a = this.qa_form.a;
+              db.collection("users")
+                .doc(user.uid)
+                .collection("m")
+                .add({
+                  type: "q_a",
+                  q: q,
+                  a: a,
+                  title: "",
+                  link: "",
+                  created_on: new Date().toISOString(),
+                  revised: 8
+                })
+                .then(() => {
+                  this.$message.success(
+                    "Your memory has been successfully recorded!"
+                  );
+                  this.$refs.qa_form.resetFields();
+                })
+                .catch((err) => {
+                  var errorCode = err.code;
+                  var errorMessage = err.message;
+                  this.$message.error(errorCode + ": " + errorMessage);
+                });
+            }
+          });
+        } else {
+          this.$message.warning("You are not logged in!");
         }
       }
     },
@@ -81,7 +112,8 @@ export default {
 </script>
 
 <style scoped>
-.el-input {
-  width: 300px;
+.el-input,
+.el-textarea {
+  width: 70vw;
 }
 </style>
