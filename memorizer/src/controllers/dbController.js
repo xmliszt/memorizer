@@ -1,6 +1,7 @@
 import { auth, db } from "./../../firebase";
 import { getRevisionDateFromCount, formatDate } from "@/controllers/dateController";
 import moment from 'moment';
+import { Object } from "core-js";
 
 export async function getSingleMemory(doc_id, uid) {
     try {
@@ -197,7 +198,7 @@ export async function getNextDocID(doc_id) {
     if (result.success) {
         var memory = result.data;
         var sortedMemory = sortDataByRevisionDate(memory, "ascending");
-        var sortedUnrevisedMemory = sortedMemory.filter(d => {
+        var sortedUnrevisedMemory = sortedMemory.filter(obj => {
             var obj_nextDate = moment(obj.next_date, formatter);
             var revised = obj.revised;
             var today = moment(new Date().toISOString);

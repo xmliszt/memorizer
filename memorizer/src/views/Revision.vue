@@ -20,6 +20,29 @@
           <el-button type="success" plain @click="remember">I Remember!</el-button>
         </div>
       </el-card>
+      <el-card v-if="data.type === 'link'">
+        <div class="title-section" slot="header">
+          <span>{{ data.title }}</span>
+          <el-tooltip content="Number of revisions left">
+            <span style="color: #E6A23C">{{ data.revised }}</span>
+          </el-tooltip>
+        </div>
+        <div>
+          <iframe
+            style="margin-top: 10px"
+            title="Link Source"
+            width="400"
+            height="200"
+            :src="embeddedLink"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          <div class="action-section">
+            <el-button type="warning" plain @click="reviseAgain">Revise Again</el-button>
+            <el-button type="success" plain @click="remember">I Remember!</el-button>
+          </div>
+        </div>
+      </el-card>
     </div>
   </div>
 </template>
@@ -32,6 +55,7 @@ import {
   getSingleMemory,
   getNextDocID,
 } from "@/controllers/dbController";
+import router from "@/router";
 export default {
   data() {
     return {
@@ -39,6 +63,23 @@ export default {
       answerVisible: false,
       loading: false,
     };
+  },
+  computed: {
+    embeddedLink() {
+      if (this.data.link) {
+        try {
+          var url = new URL(this.data.link);
+          if (url.host === "www.youtube.com") {
+            var vid = new URLSearchParams(url.search).get("v");
+            return "https://www.youtube.com/embed/" + vid;
+          } else {
+            return url;
+          }
+        } catch (err) {}
+      } else {
+        return this.data.link;
+      }
+    },
   },
   methods: {
     async goToNextMemory() {
@@ -133,6 +174,14 @@ export default {
   justify-content: space-between;
   padding: 10px;
   width: 50vw;
+  text-align: center;
+  font-size: 20px;
+}
+
+.title-section {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
   text-align: center;
   font-size: 20px;
 }
