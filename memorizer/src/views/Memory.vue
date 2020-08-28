@@ -6,7 +6,13 @@
     </div>
     <div class="memory-table">
       <el-table :data="memoryData" style="width: 100%">
-        <el-table-column prop="index" label="S/N" width="80" sortable></el-table-column>
+        <el-table-column label="S/N" width="80" sortable>
+          <template slot-scope="scope">
+            <el-tooltip effect="dark" placement="right" :content="scope.row.id"> 
+              <span>{{scope.row.index}}</span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column prop="created_on" label="Created on" width="250" sortable></el-table-column>
         <el-table-column prop="type" label="Type" width="100" sortable></el-table-column>
         <el-table-column label="Question / Title">
@@ -17,7 +23,7 @@
         </el-table-column>
         <el-table-column label="Answer / Link">
           <template slot-scope="scope">
-            <span v-if="scope.row.type === 'q_a'" class="long-answer" >{{scope.row.a}}</span>
+            <span v-if="scope.row.type === 'q_a'" class="long-answer">{{scope.row.a}}</span>
             <el-link
               v-if="scope.row.type === 'link'"
               :href="scope.row.link"
@@ -28,6 +34,19 @@
         </el-table-column>
         <el-table-column prop="next_date" label="Next Revision" width="250" sortable></el-table-column>
         <el-table-column prop="revised" label="R" width="80" sortable></el-table-column>
+        <el-table-column label="Action">
+          <template slot-scope="scope">
+            <el-tooltip effect="dark" content="Click to revise" placement="left">
+              <el-button
+                v-if="scope.row.need_revise"
+                icon="el-icon-warning"
+                type="danger"
+                plain
+                @click="revise(scope.row.id)"
+              ></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -35,7 +54,10 @@
 
 <script>
 import { app, db } from "./../../firebase";
-import { formatDate, getRevisionDateFromCount } from "@/controllers/memoryController"
+import {
+  formatDate,
+  getRevisionDateFromCount,
+} from "@/controllers/memoryController";
 import moment from "moment";
 import router from "@/router";
 export default {
@@ -63,17 +85,36 @@ export default {
                 if (snapshot.docs.length == 0) {
                   this.empty = true;
                 } else {
-                  this.memoryData = snapshot.docs.map((doc, idx) => ({
-                    index: idx,
-                    created_on: formatDate(doc.data().created_on),
-                    type: doc.data().type,
-                    revised: doc.data().revised,
-                    q: doc.data().q,
-                    a: doc.data().a,
-                    link: doc.data().link,
-                    title: doc.data().title,
-                    next_date: formatDate(getRevisionDateFromCount(doc.data().created_on, doc.data().revised))
-                  }));
+                  this.memoryData = snapshot.docs.map((doc, idx) => {
+                    var doc_id = doc.id;
+                    var created_on = doc.data().created_on;
+                    var revised = doc.data().revised;
+                    var next_date = getRevisionDateFromCount(
+                      created_on,
+                      revised
+                    );
+                    var need_revise = false;
+                    if (
+                      moment(next_date.toISOString()).isBefore(
+                        moment(new Date())
+                      )
+                    ) {
+                      need_revise = true;
+                    }
+                    return {
+                      id: doc_id,
+                      index: idx,
+                      created_on: formatDate(created_on),
+                      type: doc.data().type,
+                      revised: doc.data().revised,
+                      q: doc.data().q,
+                      a: doc.data().a,
+                      link: doc.data().link,
+                      title: doc.data().title,
+                      next_date: formatDate(next_date),
+                      need_revise: need_revise,
+                    };
+                  });
                 }
               })
               .catch((err) => {
