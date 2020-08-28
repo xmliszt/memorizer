@@ -1,5 +1,5 @@
 <template>
-  <div class="memory">
+  <div class="memory" v-loading="loading">
     <div class="empty-warning" v-show="empty">
       You have no recorded memory.
       <el-link type="warning" href="/">Go and add some first!</el-link>
@@ -8,7 +8,7 @@
       <el-table :data="memoryData" style="width: 100%">
         <el-table-column label="S/N" width="80" sortable>
           <template slot-scope="scope">
-            <el-tooltip effect="dark" placement="right" :content="scope.row.id"> 
+            <el-tooltip effect="dark" placement="right" :content="scope.row.id">
               <span>{{scope.row.index}}</span>
             </el-tooltip>
           </template>
@@ -21,9 +21,9 @@
             <span v-if="scope.row.type === 'link'">{{scope.row.title}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Answer / Link">
+        <el-table-column label="Answer / Link" width="200">
           <template slot-scope="scope">
-            <span v-if="scope.row.type === 'q_a'" class="long-answer">{{scope.row.a}}</span>
+            <span class="long-answer" v-if="scope.row.type === 'q_a'">{{scope.row.a}}</span>
             <el-link
               v-if="scope.row.type === 'link'"
               :href="scope.row.link"
@@ -34,9 +34,9 @@
         </el-table-column>
         <el-table-column prop="next_date" label="Next Revision" width="250" sortable></el-table-column>
         <el-table-column prop="revised" label="R" width="80" sortable></el-table-column>
-        <el-table-column label="Action">
+        <el-table-column label="Action" sortable>
           <template slot-scope="scope">
-            <el-tooltip effect="dark" content="Click to revise" placement="left">
+            <el-tooltip effect="dark" content="Time to revise" placement="left">
               <el-button
                 v-if="scope.row.need_revise"
                 icon="el-icon-warning"
@@ -53,90 +53,45 @@
 </template>
 
 <script>
-import { app, db } from "./../../firebase";
-import {
-  formatDate,
-  getRevisionDateFromCount,
-} from "@/controllers/memoryController";
-import moment from "moment";
+import { auth } from "./../../firebase";
+import { getMemory } from "@/controllers/memoryController";
 import router from "@/router";
 export default {
   data() {
     return {
       empty: false,
       memoryData: [],
+      loading: false,
     };
   },
+  methods: {
+    revise(doc_id) {
+      router.push(`/revision/${doc_id}`);
+    },
+  },
   mounted() {
-    var user = app.auth().currentUser;
-    if (!user) {
-      this.$notify.warning("You are not logged in!");
-      router.push("/");
-    } else {
-      const userRef = db.collection("users").doc(user.uid);
-      userRef
-        .get()
-        .then((snapshot) => {
-          if (snapshot.exists) {
-            userRef
-              .collection("m")
-              .get()
-              .then((snapshot) => {
-                if (snapshot.docs.length == 0) {
-                  this.empty = true;
-                } else {
-                  this.memoryData = snapshot.docs.map((doc, idx) => {
-                    var doc_id = doc.id;
-                    var created_on = doc.data().created_on;
-                    var revised = doc.data().revised;
-                    var next_date = getRevisionDateFromCount(
-                      created_on,
-                      revised
-                    );
-                    var need_revise = false;
-                    if (
-                      moment(next_date.toISOString()).isBefore(
-                        moment(new Date())
-                      )
-                    ) {
-                      need_revise = true;
-                    }
-                    return {
-                      id: doc_id,
-                      index: idx,
-                      created_on: formatDate(created_on),
-                      type: doc.data().type,
-                      revised: doc.data().revised,
-                      q: doc.data().q,
-                      a: doc.data().a,
-                      link: doc.data().link,
-                      title: doc.data().title,
-                      next_date: formatDate(next_date),
-                      need_revise: need_revise,
-                    };
-                  });
-                }
-              })
-              .catch((err) => {
-                var errorCode = err.code;
-                var errorMessage = err.message;
-                this.$message.error(errorCode + ": " + errorMessage);
-              });
-          } else {
-            userRef.set({
-              email: user.email,
-              verified: user.emailVerified,
-              username: user.displayName,
-            });
+    this.loading = true;
+    setTimeout(async () => {
+      var user = auth.currentUser;
+      if (!user) {
+        this.loading = false;
+        this.$notify.warning("You are not logged in!");
+        router.push("/");
+      } else {
+        var result = await getMemory(user.uid);
+        this.loading = false;
+        if (result.success) {
+          this.memoryData = result.data;
+          this.empty = false;
+        } else {
+          if (result.code == "emtpy") {
             this.empty = true;
+          } else {
+            this.$message.error(`${result.code}: ${result.data}`);
           }
-        })
-        .catch((err) => {
-          var errorCode = err.code;
-          var errorMessage = err.message;
-          this.$message.error(errorCode + ": " + errorMessage);
-        });
-    }
+        }
+      }
+    }, 1000);
   },
 };
 </script>
