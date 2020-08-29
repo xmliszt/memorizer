@@ -1,14 +1,15 @@
 <template>
   <div class="footer">
-    <div>Memorizer works best with landscape mobile, tablet, PC</div>
-    <div>Li Yuxuan © 2020</div>
+    <div>Memorizer works the best with Chrome on PC</div>
+    <div>
+      <el-link style="color: #fff" href="https://xmliszt.github.io/" target="__blank">Li Yuxuan</el-link>
+      <span> © 2020</span>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
 <style scoped>
@@ -21,7 +22,7 @@ export default {
   right: 0px;
   height: 10vh;
   padding: 1vh;
-  font-size: 2vh;
+  font-size: 1.8vh;
   background-color: #606266;
   color: #fff;
   text-align: center;

@@ -15,13 +15,13 @@
         </el-table-column>
         <el-table-column prop="created_on" label="Created on" width="250" sortable></el-table-column>
         <el-table-column prop="type" label="Type" width="100" sortable></el-table-column>
-        <el-table-column label="Question / Title" max-width="200" min-width="120">
+        <el-table-column label="Question / Title" max-width="200" min-width="150">
           <template slot-scope="scope">
             <span class="long-answer" v-if="scope.row.type === 'q_a'">{{scope.row.q}}</span>
             <span class="long-answer" v-if="scope.row.type === 'link'">{{scope.row.title}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Answer / Link" max-width="300" min-width="120">
+        <el-table-column label="Answer / Link" max-width="300" min-width="150">
           <template slot-scope="scope">
             <span class="long-answer" v-if="scope.row.type === 'q_a'">{{scope.row.a}}</span>
             <el-link
@@ -34,7 +34,9 @@
         </el-table-column>
         <el-table-column label="Next Revision" width="250" sortable>
           <template slot-scope="scope">
-            <span v-if="scope.row.need_revise"><strong>{{ scope.row.next_date }}</strong></span>
+            <span v-if="scope.row.need_revise">
+              <strong>{{ scope.row.next_date }}</strong>
+            </span>
             <span v-else>{{ scope.row.next_date }}</span>
           </template>
         </el-table-column>
@@ -50,23 +52,25 @@
                 @click="revise(scope.row.id)"
               ></el-button>
             </el-tooltip>
-            <el-tooltip effect="dark" :content="scope.row.revised > 0 ? 'Wait for next round of revision' : 'All done!'" placement="left">
+            <el-tooltip
+              effect="dark"
+              :content="scope.row.revised > 0 ? 'Wait for next round of revision' : 'All done!'"
+              placement="left"
+            >
               <el-button
                 v-if="!scope.row.need_revise"
                 icon="el-icon-success"
                 type="success"
                 plain
-                @click="revise(scope.row.id)"></el-button>
+                @click="revise(scope.row.id)"
+              ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column label="Delete">
           <template slot-scope="scope">
             <el-tooltip effect="dark" content="Delete entry" placement="left">
-              <el-button
-                icon="el-icon-remove"
-                type="danger"
-                @click="remove(scope.row.id)"></el-button>
+              <el-button icon="el-icon-remove" type="danger" @click="remove(scope.row.id)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -77,7 +81,11 @@
 
 <script>
 import { auth } from "./../../firebase";
-import { getMemory, deleteMemory, getNextDocID } from "@/controllers/dbController";
+import {
+  getMemory,
+  deleteMemory,
+  getNextDocID,
+} from "@/controllers/dbController";
 import router from "@/router";
 export default {
   data() {
@@ -89,7 +97,7 @@ export default {
   },
   methods: {
     goHome() {
-      router.push({name: "Home"});
+      router.push({ name: "Home" });
     },
     async revise(doc_id) {
       var result = await getNextDocID(doc_id);
@@ -117,7 +125,7 @@ export default {
       if (!user) {
         this.loading = false;
         this.$notify.warning("You are not logged in!");
-        router.push({name: "Home"});
+        router.push({ name: "Home" });
       } else {
         var result = await getMemory(user.uid);
         this.loading = false;
@@ -133,7 +141,7 @@ export default {
           }
         }
       }
-    }
+    },
   },
   mounted() {
     setTimeout(() => {
@@ -151,10 +159,11 @@ export default {
   color: grey;
 }
 .memory-table {
-  padding: 20px
+  padding: 20px;
 }
+
 .long-answer {
-  width: 100%;
+  word-break: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -162,5 +171,12 @@ export default {
   word-break: normal;
   text-overflow: unset;
   white-space: normal;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .long-answer {
+    word-break: normal;
+    text-overflow: ellipsis;
+  }
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
-  <div @keypress="onEnter">
+  <div>
     <el-form
       ref="qa_form"
       :model="qa_form"
       :rules="qa_rules"
-      label-width="100px"
+      label-width="120px"
       style="width: 100%"
     >
       <el-form-item label="Question" prop="q">
@@ -12,6 +12,8 @@
           class="input-element"
           placeholder="Input your question..."
           v-model="qa_form.q"
+          :maxlength="100"
+          show-word-limit
           clearable
         ></el-input>
       </el-form-item>
@@ -25,23 +27,29 @@
           clearable
         ></el-input>
       </el-form-item>
+      <el-form-item>
+        <div style="text-align: left">
+          <el-button type="info" plain @click="submit">Submit</el-button>
+        </div>
+      </el-form-item>
     </el-form>
     <div>
-      <p>
-        <span class="display-title">Question:</span>
-        {{ qa_form.q }}
-      </p>
-      <p>
-        <span class="display-title">Answer:</span>
-        {{ qa_form.a }}
-      </p>
+      <div class="display-holder">
+        <div class="display-title">Question:</div>
+        <div class="display-content">{{ qa_form.q }}</div>
+      </div>
+      <div class="display-holder">
+        <div class="display-title">Answer:</div>
+        <div class="display-content">
+          <span>{{ qa_form.a }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { app, db } from "./../../firebase";
-import router from "@/router";
+import { auth, db } from "./../../firebase";
 export default {
   data() {
     return {
@@ -69,42 +77,40 @@ export default {
     };
   },
   methods: {
-    onEnter(e) {
-      var user = app.auth().currentUser;
-      if (e.charCode === 13) {
-        if (user) {
-          this.$refs.qa_form.validate((valid) => {
-            if (valid) {
-              var q = this.qa_form.q;
-              var a = this.qa_form.a;
-              db.collection("users")
-                .doc(user.uid)
-                .collection("m")
-                .add({
-                  type: "q_a",
-                  q: q,
-                  a: a,
-                  title: "",
-                  link: "",
-                  created_on: new Date().toISOString(),
-                  revised: 8
-                })
-                .then(() => {
-                  this.$message.success(
-                    "Your memory has been successfully recorded!"
-                  );
-                  this.$refs.qa_form.resetFields();
-                })
-                .catch((err) => {
-                  var errorCode = err.code;
-                  var errorMessage = err.message;
-                  this.$message.error(errorCode + ": " + errorMessage);
-                });
-            }
-          });
-        } else {
-          this.$message.warning("You are not logged in!");
-        }
+    submit() {
+      var user = auth.currentUser;
+      if (user) {
+        this.$refs.qa_form.validate((valid) => {
+          if (valid) {
+            var q = this.qa_form.q;
+            var a = this.qa_form.a;
+            db.collection("users")
+              .doc(user.uid)
+              .collection("m")
+              .add({
+                type: "q_a",
+                q: q,
+                a: a,
+                title: "",
+                link: "",
+                created_on: new Date().toISOString(),
+                revised: 8,
+              })
+              .then(() => {
+                this.$message.success(
+                  "Your memory has been successfully recorded!"
+                );
+                this.$refs.qa_form.resetFields();
+              })
+              .catch((err) => {
+                var errorCode = err.code;
+                var errorMessage = err.message;
+                this.$message.error(errorCode + ": " + errorMessage);
+              });
+          }
+        });
+      } else {
+        this.$message.warning("You are not logged in!");
       }
     },
   },
@@ -114,6 +120,21 @@ export default {
 <style scoped>
 .el-input,
 .el-textarea {
-  width: 60vw;
+  width: 50vw;
 }
+.display-holder {
+  display: flex;
+  margin-bottom: 20px;
+}
+.display-content {
+  white-space: pre;
+  width: 50vw;
+  word-break: break-word;
+}
+.display-title {
+  width: 100px;
+  font-weight: 700;
+  margin-right: 10px;
+}
+
 </style>

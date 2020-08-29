@@ -5,19 +5,31 @@
 </template>
 
 <script>
-import InputContent from "@/components/InputContent.vue"
+import InputContent from "@/components/InputContent.vue";
 export default {
   components: {
-    InputContent
-  }
-}
+    InputContent,
+  },
+};
 </script>
 
 <style scoped>
 .home {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
+  overflow: scroll;
+  height: 65vh;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.home::-webkit-scrollbar {
+  display: none;
+}
+
+@media(max-width: 500px) {
+  .home {
+    height: 60vh;
+  }
 }
 </style>

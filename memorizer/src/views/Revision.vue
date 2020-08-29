@@ -14,7 +14,7 @@
         </div>
       </el-card>
       <el-card v-show="answerVisible">
-        <div class="answer-section">{{ data.a }}</div>
+        <div class="answer-section display-holder">{{ data.a }}</div>
         <div class="action-section">
           <el-button type="warning" plain @click="reviseAgain">Revise Again</el-button>
           <el-button type="success" plain @click="remember">I Remember!</el-button>
@@ -28,6 +28,7 @@
           </el-tooltip>
         </div>
         <div>
+          <div><el-link :href="data.link" target="__blank">{{ data.link }}</el-link></div>
           <iframe
             style="margin-top: 10px"
             title="Link Source"
@@ -202,5 +203,11 @@ export default {
   cursor: pointer;
   opacity: 0.7;
   transition: opacity 0.2s;
+}
+
+.display-holder {
+  display: flex; 
+  margin-bottom: 20px;
+  white-space: pre;
 }
 </style>
