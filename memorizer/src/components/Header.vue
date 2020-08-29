@@ -11,7 +11,7 @@
         <el-button type="warning" icon="el-icon-s-opportunity" circle @click="goHome"></el-button>
       </el-tooltip>
     </div>
-    <el-dialog title="Sign in with Google" :visible.sync="signInVisible" width="30%">
+    <el-dialog title="Sign in with Google" :visible.sync="signInVisible" width="60vw">
       <span>You need to login to access your memory!</span>
       <br />
       <span>You will be directed to Google Account login page.</span>
