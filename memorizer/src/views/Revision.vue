@@ -3,18 +3,22 @@
     <div class="card-holder">
       <el-card v-if="data.type === 'q_a'">
         <div class="question-section" @click="answerVisible = !answerVisible">
-          <el-tooltip
-            :content="answerVisible ? 'Click to hide the answer' : 'Click to show the answer'"
-          >
-            <span>{{ data.q }}</span>
-          </el-tooltip>
-          <el-tooltip content="Number of revisions left">
-            <span style="color: #E6A23C">{{ data.revised }}</span>
-          </el-tooltip>
+          <div>
+            <el-tooltip
+              :content="answerVisible ? 'Click to hide the answer' : 'Click to show the answer'"
+            >
+              <div style="margin-right: 10px">{{ data.q }}</div>
+            </el-tooltip>
+          </div>
+          <div>
+            <el-tooltip content="Number of revisions left">
+              <div style="color: #E6A23C">{{ data.revised }}</div>
+            </el-tooltip>
+          </div>
         </div>
       </el-card>
       <el-card v-show="answerVisible">
-        <div class="answer-section display-holder">{{ data.a }}</div>
+        <div class="answer-section">{{ data.a }}</div>
         <div class="action-section">
           <el-button type="warning" plain @click="reviseAgain">Revise Again</el-button>
           <el-button type="success" plain @click="remember">I Remember!</el-button>
@@ -28,12 +32,14 @@
           </el-tooltip>
         </div>
         <div>
-          <div><el-link :href="data.link" target="__blank">{{ data.link }}</el-link></div>
+          <div>
+            <el-link :href="data.link" target="__blank">{{ data.link }}</el-link>
+          </div>
           <iframe
             style="margin-top: 10px"
             title="Link Source"
-            width="400"
-            height="200"
+            width="100%"
+            height=""
             :src="embeddedLink"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
@@ -70,8 +76,12 @@ export default {
       if (this.data.link) {
         try {
           var url = new URL(this.data.link);
+          var vid = "";
           if (url.host === "www.youtube.com") {
-            var vid = new URLSearchParams(url.search).get("v");
+            vid = new URLSearchParams(url.search).get("v");
+            return "https://www.youtube.com/embed/" + vid;
+          } else if (url.host === "youtu.be") {
+            vid = url.pathname.split("/")[1];
             return "https://www.youtube.com/embed/" + vid;
           } else {
             return url;
@@ -158,24 +168,23 @@ export default {
 
 <style scoped>
 .revision {
-  width: 100%;
-  height: 65vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100vw;
+  max-width: 100%;
+  height: 70vh;
   padding: 20px;
+  overflow-y: scroll;
 }
 
 .card-holder {
-  z-index: 999;
+  padding: 10vw;
 }
 
 .question-section {
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  width: 50vw;
-  text-align: center;
+  width: 60vw;
+  text-align: justify;
   font-size: 20px;
 }
 
@@ -188,9 +197,12 @@ export default {
 }
 
 .answer-section {
-  width: 50vw;
-  text-align: center;
+  width: 60vw;
+  text-align: justify;
   font-size: 15px;
+  white-space: pre-wrap;
+  text-overflow: unset;
+  word-break: break-word;
 }
 
 .action-section {
@@ -205,9 +217,15 @@ export default {
   transition: opacity 0.2s;
 }
 
-.display-holder {
-  display: flex; 
-  margin-bottom: 20px;
-  white-space: pre;
+@supports (-webkit-touch-callout: none) {
+  .question-section {
+    display: flex;
+  }
+}
+
+@media (max-width: 500px) {
+  .question-section {
+    font-size: 15px;
+  }
 }
 </style>

@@ -25,6 +25,12 @@ body {
   font-size: 12px !important;
 }
 
+iframe {
+  min-height: calc(70vw * 0.6);
+  outline: none;
+  border: 1px solid black;
+}
+
 *,
 *:before,
 *:after {

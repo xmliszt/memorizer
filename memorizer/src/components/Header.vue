@@ -115,6 +115,7 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
+  z-index: 99999;
 }
 .header-block {
   width: 100vw;
