@@ -5,7 +5,7 @@
       <el-link type="warning" @click="goHome">Go and add some first!</el-link>
     </div>
     <div class="memory-table" v-show="!empty">
-      <el-table :data="memoryData" style="width: 100%" height="60vh" max-height="65vh">
+      <el-table :data="memoryData" style="width: 100%; font-size: 12px;" height="65vh" max-height="65vh" size="mini">
         <el-table-column label="S/N" width="80" sortable>
           <template slot-scope="scope">
             <el-tooltip effect="dark" placement="right" :content="scope.row.id">
@@ -13,26 +13,42 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="created_on" label="Created on" width="250" sortable></el-table-column>
+        <el-table-column prop="created_on" label="Created on" width="220" sortable></el-table-column>
         <el-table-column prop="type" label="Type" width="100" sortable></el-table-column>
-        <el-table-column label="Question / Title" max-width="200" min-width="150">
+        <el-table-column label="Question / Title" max-width="500px" min-width="150">
           <template slot-scope="scope">
-            <span class="long-answer" v-if="scope.row.type === 'q_a'">{{scope.row.q}}</span>
-            <span class="long-answer" v-if="scope.row.type === 'link'">{{scope.row.title}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Answer / Link" max-width="300" min-width="150">
-          <template slot-scope="scope">
-            <span class="long-answer" v-if="scope.row.type === 'q_a'">{{scope.row.a}}</span>
-            <el-link
+            <textarea
+              disabled
+              class="long-answer"
+              v-if="scope.row.type === 'q_a'"
+              :value="scope.row.q"
+            />
+            <textarea
+              class="long-answer"
+              disabled
               v-if="scope.row.type === 'link'"
-              :href="scope.row.link"
-              type="info"
-              target="_blank"
-            >{{scope.row.link}}</el-link>
+              :value="scope.row.title"
+            />
           </template>
         </el-table-column>
-        <el-table-column label="Next Revision" width="250" sortable>
+        <el-table-column label="Answer / Link" max-width="500px" min-width="150">
+          <template slot-scope="scope">
+            <textarea
+              class="brief-answer"
+              disabled
+              v-if="scope.row.type === 'q_a'"
+              :value="scope.row.a"
+            />
+            <div v-if="scope.row.type === 'link'">
+              <a
+                :href="scope.row.link"
+                type="info"
+                target="_blank"
+              >Click to open link</a>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="Next Revision" width="220" sortable>
           <template slot-scope="scope">
             <span v-if="scope.row.need_revise">
               <strong>{{ scope.row.next_date }}</strong>
@@ -48,6 +64,7 @@
                 v-if="scope.row.need_revise"
                 icon="el-icon-warning"
                 type="warning"
+                size="mini"
                 plain
                 @click="revise(scope.row.id)"
               ></el-button>
@@ -62,6 +79,7 @@
                 icon="el-icon-success"
                 type="success"
                 plain
+                size="mini"
                 @click="revise(scope.row.id)"
               ></el-button>
             </el-tooltip>
@@ -70,7 +88,7 @@
         <el-table-column label="Delete">
           <template slot-scope="scope">
             <el-tooltip effect="dark" content="Delete entry" placement="left">
-              <el-button icon="el-icon-remove" type="danger" @click="remove(scope.row.id)"></el-button>
+              <el-button icon="el-icon-remove" type="danger" @click="remove(scope.row.id)" size="mini"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -153,30 +171,65 @@ export default {
 
 <style scoped>
 .empty-warning {
-  margin-top: 30px;
+  margin-top: 5vh;
   text-align: center;
   font-size: 15px;
   color: grey;
 }
 .memory-table {
-  padding: 20px;
+  padding: 3vh;
+}
+
+.brief-answer {
+  outline: none;
+  border: 0px;
+  resize: none;
+  font-size: 12px !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 18px;
+  background: transparent;
 }
 
 .long-answer {
+  outline: none;
+  border: 0px;
+  resize: none;
+  font-size: 12px !important;
   word-break: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
+  overflow: hidden;
+  background: transparent;
+  height: 18px;
+  transition: height 0.3s;
 }
+
 .long-answer:hover {
-  word-break: normal;
+  word-break: break-all;
   text-overflow: unset;
   white-space: normal;
+  overflow: hidden;
+  height: 65px;
+}
+a {
+  font-size: 12px !important;
+  text-decoration: none !important;
+  color: grey !important;
 }
 
 @supports (-webkit-touch-callout: none) {
   .long-answer {
     word-break: normal;
+    white-space: unset;
     text-overflow: ellipsis;
+    overflow: scroll;
+  }
+}
+
+@media(max-width: 500px) {
+  .memory {
+    height: 60vh;
   }
 }
 </style>

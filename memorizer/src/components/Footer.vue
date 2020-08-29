@@ -26,5 +26,6 @@ export default {};
   background-color: #606266;
   color: #fff;
   text-align: center;
+  z-index: 99999;
 }
 </style>
