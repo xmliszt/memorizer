@@ -5,7 +5,30 @@
       <el-link type="warning" @click="goHome">Go and add some first!</el-link>
     </div>
     <div class="memory-table" v-show="!empty">
-      <el-table :data="memoryData" style="width: 100%; font-size: 12px;" height="65vh" max-height="65vh" size="mini">
+      <div class="action-panel">
+        <el-select v-model="typeFilter" placeholder="Type" size="mini" style="margin-right: 15px">
+          <el-option
+            v-for="item in types"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+        <el-switch
+          style="display: block"
+          v-model="showOnlyNeedRevision"
+          active-color="#13ce66"
+          active-text="Fading Memories"
+        ></el-switch>
+      </div>
+      <el-table
+        ref="memoryTable"
+        :data="displayMemoryData"
+        style="width: 100%; font-size: 12px;"
+        height="60vh"
+        max-height="60vh"
+        size="mini"
+      >
         <el-table-column label="S/N" width="80" sortable>
           <template slot-scope="scope">
             <el-tooltip effect="dark" placement="right" :content="scope.row.id">
@@ -40,11 +63,7 @@
               :value="scope.row.a"
             />
             <div v-if="scope.row.type === 'link'">
-              <a
-                :href="scope.row.link"
-                type="info"
-                target="_blank"
-              >Click to open link</a>
+              <a :href="scope.row.link" type="info" target="_blank">Click to open link</a>
             </div>
           </template>
         </el-table-column>
@@ -88,7 +107,12 @@
         <el-table-column label="Delete">
           <template slot-scope="scope">
             <el-tooltip effect="dark" content="Delete entry" placement="left">
-              <el-button icon="el-icon-remove" type="danger" @click="remove(scope.row.id)" size="mini"></el-button>
+              <el-button
+                icon="el-icon-remove"
+                type="danger"
+                @click="remove(scope.row.id)"
+                size="mini"
+              ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -111,6 +135,22 @@ export default {
       empty: false,
       memoryData: [],
       loading: false,
+      showOnlyNeedRevision: false,
+      typeFilter: "all",
+      types: [
+        {
+          value: "q_a",
+          label: "Q&A"
+        },
+        {
+          value: "link",
+          label: "Link"
+        },
+        {
+          value: "all",
+          label: "All"
+        }
+      ],
     };
   },
   methods: {
@@ -159,6 +199,7 @@ export default {
           }
         }
       }
+      this.$refs.memoryTable.sort("created_on", "ascending");
     },
   },
   mounted() {
@@ -166,10 +207,26 @@ export default {
       this.refreshMemory();
     }, 1500);
   },
+  computed: {
+    displayMemoryData() {
+      var data = this.memoryData;
+      if (this.showOnlyNeedRevision) {
+        data = data.filter(d => (d.need_revise));
+      }
+      data = data.filter(d => (this.typeFilter == "all" ? true : d.type === this.typeFilter));
+      return data;
+    }
+  },
 };
 </script>
 
 <style scoped>
+.action-panel {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
 .empty-warning {
   margin-top: 5vh;
   text-align: center;
@@ -227,7 +284,7 @@ a {
   }
 }
 
-@media(max-width: 500px) {
+@media (max-width: 500px) {
   .memory {
     height: 60vh;
   }
