@@ -263,11 +263,11 @@ export default {
 }
 
 .long-answer:hover {
-  word-break: break-all;
+  word-break: break-word;
   text-overflow: unset;
   white-space: normal;
   overflow: hidden;
-  height: 65px;
+  height: 80px;
 }
 a {
   font-size: 12px !important;
