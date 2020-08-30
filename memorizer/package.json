@@ -9,6 +9,9 @@
   "dependencies": {
     "@firebase/app": "^0.6.10",
     "@firebase/firestore": "^1.16.5",
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-brands-svg-icons": "^5.14.0",
+    "@fortawesome/vue-fontawesome": "^0.1.10",
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",
     "firebase": "^7.19.0",

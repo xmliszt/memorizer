@@ -5,6 +5,9 @@
       <el-link style="color: #fff" href="https://xmliszt.github.io/" target="__blank">Li Yuxuan</el-link>
       <span> © 2020</span>
     </div>
+    <div>
+      <el-link style="color: #fff" icon="el-icon-question" href="https://github.com/xmliszt/memorizer.git" target="__blank"><span>How to use Memorizer? </span><font-awesome-icon :icon="['fab', 'github']" /></el-link>
+    </div>
   </div>
 </template>
 
