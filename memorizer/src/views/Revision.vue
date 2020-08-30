@@ -184,7 +184,7 @@ export default {
   justify-content: space-between;
   padding: 10px;
   width: 60vw;
-  text-align: justify;
+  text-align: left;
   font-size: 20px;
 }
 

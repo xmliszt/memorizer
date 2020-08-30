@@ -30,7 +30,7 @@
         </div>
       </el-form-item>
     </el-form>
-    <div class="display-container">
+    <div>
       <div class="display-holder">
         <div class="display-title">Title:</div>
         <div class="display-content">{{ link_form.link_title }}</div>
@@ -112,10 +112,6 @@ export default {
 </script>
 
 <style scoped>
-.display-container {
-  text-align: justify;
-  margin-left: 120px;
-}
 .el-input {
   width: 50vw;
 }

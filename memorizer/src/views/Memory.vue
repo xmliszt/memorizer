@@ -25,8 +25,8 @@
         ref="memoryTable"
         :data="displayMemoryData"
         style="width: 100%; font-size: 12px;"
-        height="60vh"
-        max-height="60vh"
+        height="55vh"
+        max-height="55vh"
         size="mini"
       >
         <el-table-column label="S/N" width="80" sortable>
@@ -273,15 +273,6 @@ a {
   font-size: 12px !important;
   text-decoration: none !important;
   color: grey !important;
-}
-
-@supports (-webkit-touch-callout: none) {
-  .long-answer {
-    word-break: normal;
-    white-space: unset;
-    text-overflow: ellipsis;
-    overflow: scroll;
-  }
 }
 
 @media (max-width: 500px) {
