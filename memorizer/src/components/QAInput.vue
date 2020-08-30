@@ -127,7 +127,7 @@ export default {
   margin-bottom: 20px;
 }
 .display-content {
-  white-space: pre;
+  white-space: pre-wrap;
   width: 50vw;
   word-break: break-word;
 }
