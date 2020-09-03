@@ -202,7 +202,7 @@ export async function getNextDocID(doc_id) {
         var sortedUnrevisedMemory = sortedMemory.filter(obj => {
             var obj_nextDate = moment(obj.next_date, formatter);
             var revised = obj.revised;
-            var today = moment(new Date().toISOString);
+            var today = moment(new Date().toISOString());
             return (obj_nextDate.isBefore(today) && revised > 0);
         });
         var doc_idx = sortedUnrevisedMemory.findIndex(obj => obj.id == doc_id);
@@ -210,7 +210,7 @@ export async function getNextDocID(doc_id) {
             var next_idx = doc_idx + 1;
             var next_doc_id = "";
             if (next_idx == sortedUnrevisedMemory.length) {
-                if (sortedUnrevisedMemory[0].revised > 0) {
+                if (sortedUnrevisedMemory[0].revised > 0 && sortedUnrevisedMemory[0].id !== doc_id) {
                     next_doc_id = sortedUnrevisedMemory[0].id
                 } else {
                     next_doc_id = "end";

@@ -102,6 +102,8 @@ export default {
         if (result.success) {
           var next_next_id = result.data;
           router.push(`/revision/${next_doc_id}?next=${next_next_id}`);
+          this.getMemory();
+          this.answerVisible = false;
         } else {
           this.$message.error(`${result.code}: ${result.data}`);
         }

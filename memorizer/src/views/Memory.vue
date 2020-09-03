@@ -36,7 +36,7 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="created_on" label="Previous Revision" width="220" sortable></el-table-column>
+        <el-table-column prop="created_on" label="Previous Revision" width="220" sortable :sort-method="sortPrevDate"></el-table-column>
         <el-table-column prop="type" label="Type" width="100" sortable></el-table-column>
         <el-table-column label="Question / Title" max-width="500px" min-width="150">
           <template slot-scope="scope">
@@ -67,7 +67,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="Next Revision" width="220" sortable>
+        <el-table-column label="Next Revision" width="240" sortable :sort-method="sortNextDate">
           <template slot-scope="scope">
             <span v-if="scope.row.need_revise">
               <strong>{{ scope.row.next_date }}</strong>
@@ -129,6 +129,7 @@ import {
   getNextDocID,
 } from "@/controllers/dbController";
 import router from "@/router";
+import moment from "moment";
 export default {
   data() {
     return {
@@ -201,6 +202,14 @@ export default {
       }
       this.$refs.memoryTable.sort("created_on", "ascending");
     },
+    sortPrevDate(a, b) {
+      const formatter = "dddd, MMM Do YYYY, HH:mm:ss";
+      return moment(a.created_on, formatter).isBefore(moment(b.created_on, formatter)) ? -1 : 1;
+    },
+    sortNextDate(a, b) {
+      const formatter = "dddd, MMM Do YYYY, HH:mm:ss";
+      return moment(a.next_date, formatter).isBefore(moment(b.next_date, formatter)) ? -1 : 1;
+    }
   },
   mounted() {
     setTimeout(() => {
