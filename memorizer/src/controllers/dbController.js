@@ -79,7 +79,8 @@ export async function getSingleMemory(doc_id, uid) {
           .collection("m")
           .doc(doc_id)
           .update({
-            revised: revised
+            revised: revised,
+            created_on: new Date().toISOString()
           });
         return {
           success: true,

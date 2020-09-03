@@ -36,7 +36,7 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="created_on" label="Created on" width="220" sortable></el-table-column>
+        <el-table-column prop="created_on" label="Previous Revision" width="220" sortable></el-table-column>
         <el-table-column prop="type" label="Type" width="100" sortable></el-table-column>
         <el-table-column label="Question / Title" max-width="500px" min-width="150">
           <template slot-scope="scope">
