@@ -1,10 +1,18 @@
 # Memorizer
-**Version 1.0.0**
+**Version 1.0.1**
 
 The manager of your fading memories.
 https://xmliszt.github.io/memorizer
 
+##  What's New
+
+Version 1.0.1
+
+* Added categorization feature for memory. Now you can categorize your memory and revise them separately!
+* Optimized Firebase authentication to fix an issue where unauthenticated is detected when user is already logged in.
+
 ## Introduction
+
 Memorizer is a Vue website running on GitHub Page that uses Google Firestore as database. It uses the [Ebbinghaus Forgetting Curve](https://en.wikipedia.org/wiki/Forgetting_curve) to auto-calculate your revision schedule.
 
 You can create two types of revision cards:
@@ -13,6 +21,7 @@ You can create two types of revision cards:
 2. Link: special revision card which accepts a valid URL as the resource. When you revise this kind of card, simply click the link to be directed to the source. **If your link is a YouTube video link, it can be played on the website itself as embedded link**
 
 ## How to use Memorizer?
+
 Here is a detailed screenshoted examples to guide you through the application:
 
 ![1](./src/assets/1.jpg)
@@ -29,6 +38,13 @@ Here is a detailed screenshoted examples to guide you through the application:
 
 ![7](./src/assets/7.jpg)
 
+[**Version 1.0.1**] You can add categories to your memory now!
+
+![](./src/assets/8.jpg)
+
+![](./src/assets/9.jpg)
+
+![](./src/assets/10.jpg)
 
 ## Contributions
 
