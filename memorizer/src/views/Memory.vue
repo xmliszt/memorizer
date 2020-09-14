@@ -180,7 +180,10 @@ export default {
       var next_doc_id = "";
       if (result.success) {
         next_doc_id = result.data;
-        router.push(`/revision/${doc_id}?next=${next_doc_id}?category=${this.categoryFilter}`);
+        router.push({
+          path: `/revision/${doc_id}`,
+          query: { next: next_doc_id, category: this.categoryFilter },
+        });
       } else {
         this.$message.error(`${result.code}: ${result.data}`);
       }
@@ -258,7 +261,11 @@ export default {
       data = data.filter((d) =>
         this.typeFilter == "all" ? true : d.type === this.typeFilter
       );
-      data = data.filter((d) => this.categoryFilter == "uncategorized" ? true : this.categoryFilter === d.category);
+      data = data.filter((d) =>
+        this.categoryFilter == "uncategorized"
+          ? true
+          : this.categoryFilter === d.category
+      );
       return data;
     },
   },

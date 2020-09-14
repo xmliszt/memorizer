@@ -106,7 +106,10 @@ export default {
         var result = await getNextDocID(next_doc_id, categoryFilter);
         if (result.success) {
           var next_next_id = result.data;
-          router.push(`/revision/${next_doc_id}?next=${next_next_id}`);
+          router.push({
+          path: `/revision/${next_doc_id}`,
+          query: { next: next_next_id, category: categoryFilter },
+        });
           this.getMemory();
           this.answerVisible = false;
         } else {
