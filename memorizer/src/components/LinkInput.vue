@@ -7,6 +7,9 @@
       label-width="120px"
       style="width: 100%"
     >
+      <el-form-item label="Category" prop="category">
+        <CategorySelector ref="categorySelector" />
+      </el-form-item>
       <el-form-item label="Title" prop="link_title">
         <el-input
           placeholder="Input title..."
@@ -50,8 +53,13 @@
 </template>
 
 <script>
-import { auth, db } from "./../../firebase";
+import { db } from "./../../firebase";
+import CategorySelector from "@/components/CategorySelector";
+import { pushCategory, getCategory, addLink } from "@/controllers/dbController";
 export default {
+  components: {
+    CategorySelector,
+  },
   data() {
     return {
       link_form: {
@@ -66,41 +74,40 @@ export default {
           { required: true, message: "Link cannot be empty", trigger: "blur" },
           { type: "url", message: "Invalid link", trigger: "blur" },
         ],
+        category: [
+          {
+            required: true,
+            message: "Category cannot be empty",
+            trigger: "blur",
+          },
+        ],
       },
     };
   },
   methods: {
     submit() {
-      var user = auth.currentUser;
+      var user = sessionStorage.getItem("user");
       if (user) {
-        this.$refs.link_form.validate((valid) => {
+        this.$refs.link_form.validate(async (valid) => {
           if (valid) {
+            var result = await pushCategory(user, category);
+            if (!result.success) {
+              this.$message.error(`${result.code}: ${result.data}`);
+            }
             var title = this.link_form.link_title;
             var link = this.link_form.link_input;
-            var date = new Date();
-            db.collection("users")
-              .doc(user.uid)
-              .collection("m")
-              .add({
-                type: "link",
-                q: "",
-                a: "",
-                title: title,
-                link: link,
-                created_on: date.toISOString(),
-                revised: 8,
-              })
-              .then(() => {
-                this.$message.success(
-                  "Your memory has been successfully recorded!"
-                );
-                this.$refs.link_form.resetFields();
-              })
-              .catch((err) => {
-                var errorCode = err.code;
-                var errorMessage = err.message;
-                this.$message.error(errorCode + ": " + errorMessage);
-              });
+            var category = this.$refs.categorySelector.category;
+            result = await addLink(user, title, link, category);
+            if (result.success) {
+              this.$message.success(
+                "Your memory has been successfully recorded!"
+              );
+              this.$refs.link_form.resetFields();
+            } else {
+              var errorCode = err.code;
+              var errorMessage = err.message;
+              this.$message.error(errorCode + ": " + errorMessage);
+            }
           }
         });
       } else {

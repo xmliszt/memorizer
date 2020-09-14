@@ -2,7 +2,7 @@
   <div class="revision" v-loading="loading">
     <div class="card-holder">
       <el-card v-if="data.type === 'q_a'">
-        <div class="question-section" @click="answerVisible = !answerVisible">
+        <div class="title-section" @click="answerVisible = !answerVisible">
           <div>
             <el-tooltip
               :content="answerVisible ? 'Click to hide the answer' : 'Click to show the answer'"
@@ -10,7 +10,8 @@
               <div style="margin-right: 10px">{{ data.q }}</div>
             </el-tooltip>
           </div>
-          <div>
+          <div class="info-section">
+            <el-tag type="info" size="small" hit style="margin-right: 20px">{{ category }}</el-tag>
             <el-tooltip content="Number of revisions left">
               <div style="color: #E6A23C">{{ data.revised }}</div>
             </el-tooltip>
@@ -27,9 +28,12 @@
       <el-card v-if="data.type === 'link'">
         <div class="title-section" slot="header">
           <span>{{ data.title }}</span>
-          <el-tooltip content="Number of revisions left">
-            <span style="color: #E6A23C">{{ data.revised }}</span>
-          </el-tooltip>
+          <div class="info-section">
+            <el-tag type="info" size="small" hit style="margin-right: 20px">{{ category }}</el-tag>
+            <el-tooltip content="Number of revisions left">
+              <span style="color: #E6A23C">{{ data.revised }}</span>
+            </el-tooltip>
+          </div>
         </div>
         <div>
           <div>
@@ -39,7 +43,7 @@
             style="margin-top: 10px"
             title="Link Source"
             width="100%"
-            height=""
+            height
             :src="embeddedLink"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
@@ -55,7 +59,6 @@
 </template>
 
 <script>
-import { auth } from "./../../firebase";
 import {
   fadeMemory,
   gainMemory,
@@ -69,6 +72,7 @@ export default {
       data: {},
       answerVisible: false,
       loading: false,
+      category: "",
     };
   },
   computed: {
@@ -95,10 +99,11 @@ export default {
   methods: {
     async goToNextMemory() {
       var next_doc_id = this.$route.query.next;
+      var categoryFilter = this.$route.query.category;
       if (next_doc_id == "end") {
         router.push("/done");
       } else {
-        var result = await getNextDocID(next_doc_id);
+        var result = await getNextDocID(next_doc_id, categoryFilter);
         if (result.success) {
           var next_next_id = result.data;
           router.push(`/revision/${next_doc_id}?next=${next_next_id}`);
@@ -143,17 +148,22 @@ export default {
     },
     async getMemory() {
       this.loading = true;
-      var user = auth.currentUser;
+      var user = sessionStorage.getItem("user");
       if (!user) {
         this.loading = false;
         this.$notify.warning("You are not logged in!");
         router.push("/");
       } else {
         var doc_id = this.$route.params.id;
-        var result = await getSingleMemory(doc_id, user.uid);
+        var result = await getSingleMemory(doc_id, user);
         this.loading = false;
         if (result.success) {
           this.data = result.data;
+          if (!result.data.category) {
+            this.category = "uncategorized";
+          } else {
+            this.category = result.data.category;
+          }
         } else {
           this.$message.error(`${result.code}: ${result.data}`);
         }
@@ -196,6 +206,12 @@ export default {
   padding: 10px;
   text-align: center;
   font-size: 20px;
+}
+
+.info-section {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
 }
 
 .answer-section {

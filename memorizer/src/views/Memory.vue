@@ -6,13 +6,21 @@
     </div>
     <div class="memory-table" v-show="!empty">
       <div class="action-panel">
+        <el-select
+          v-model="categoryFilter"
+          placeholder="Category"
+          size="mini"
+          style="width: 150px; margin-right: 15px"
+        >
+          <el-option v-for="item in categories" :key="item" :label="item" :value="item"></el-option>
+        </el-select>
         <el-select v-model="typeFilter" placeholder="Type" size="mini" style="margin-right: 15px">
           <el-option
             v-for="item in types"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-          </el-option>
+            :value="item.value"
+          ></el-option>
         </el-select>
         <el-switch
           style="display: block"
@@ -36,8 +44,15 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="created_on" label="Previous Revision" width="220" sortable :sort-method="sortPrevDate"></el-table-column>
+        <el-table-column
+          prop="created_on"
+          label="Previous Revision"
+          width="220"
+          sortable
+          :sort-method="sortPrevDate"
+        ></el-table-column>
         <el-table-column prop="type" label="Type" width="100" sortable></el-table-column>
+        <el-table-column prop="category" label="Category" width="150" sortable></el-table-column>
         <el-table-column label="Question / Title" max-width="500px" min-width="150">
           <template slot-scope="scope">
             <textarea
@@ -122,11 +137,11 @@
 </template>
 
 <script>
-import { auth } from "./../../firebase";
 import {
   getMemory,
   deleteMemory,
   getNextDocID,
+  getCategory,
 } from "@/controllers/dbController";
 import router from "@/router";
 import moment from "moment";
@@ -138,19 +153,21 @@ export default {
       loading: false,
       showOnlyNeedRevision: false,
       typeFilter: "all",
+      categoryFilter: "uncategorized",
+      categories: ["uncategorized"],
       types: [
         {
           value: "q_a",
-          label: "Q&A"
+          label: "Q&A",
         },
         {
           value: "link",
-          label: "Link"
+          label: "Link",
         },
         {
           value: "all",
-          label: "All"
-        }
+          label: "All",
+        },
       ],
     };
   },
@@ -159,17 +176,17 @@ export default {
       router.push({ name: "Home" });
     },
     async revise(doc_id) {
-      var result = await getNextDocID(doc_id);
+      var result = await getNextDocID(doc_id, this.categoryFilter);
       var next_doc_id = "";
       if (result.success) {
         next_doc_id = result.data;
-        router.push(`/revision/${doc_id}?next=${next_doc_id}`);
+        router.push(`/revision/${doc_id}?next=${next_doc_id}?category=${this.categoryFilter}`);
       } else {
         this.$message.error(`${result.code}: ${result.data}`);
       }
     },
     async remove(doc_id) {
-      var uid = auth.currentUser.uid;
+      var uid = sessionStorage.getItem("user");
       var result = await deleteMemory(doc_id, uid);
       if (result.success) {
         this.$message.success("Memory has been deleted successfully!");
@@ -180,14 +197,22 @@ export default {
     },
     async refreshMemory() {
       this.loading = true;
-      var user = auth.currentUser;
+      var user = sessionStorage.getItem("user");
       if (!user) {
         this.loading = false;
         this.$notify.warning("You are not logged in!");
         router.push({ name: "Home" });
       } else {
-        var result = await getMemory(user.uid);
+        var result = await getMemory(user);
+        var cateogry_result = await getCategory(user);
         this.loading = false;
+        if (cateogry_result.success) {
+          this.categories = cateogry_result.data;
+        } else {
+          this.$message.error(
+            `${category_result.code}: ${cateogry_result.data}`
+          );
+        }
         if (result.success) {
           this.memoryData = result.data;
           this.empty = false;
@@ -204,12 +229,20 @@ export default {
     },
     sortPrevDate(a, b) {
       const formatter = "dddd, MMM Do YYYY, HH:mm:ss";
-      return moment(a.created_on, formatter).isBefore(moment(b.created_on, formatter)) ? -1 : 1;
+      return moment(a.created_on, formatter).isBefore(
+        moment(b.created_on, formatter)
+      )
+        ? -1
+        : 1;
     },
     sortNextDate(a, b) {
       const formatter = "dddd, MMM Do YYYY, HH:mm:ss";
-      return moment(a.next_date, formatter).isBefore(moment(b.next_date, formatter)) ? -1 : 1;
-    }
+      return moment(a.next_date, formatter).isBefore(
+        moment(b.next_date, formatter)
+      )
+        ? -1
+        : 1;
+    },
   },
   mounted() {
     setTimeout(() => {
@@ -220,11 +253,14 @@ export default {
     displayMemoryData() {
       var data = this.memoryData;
       if (this.showOnlyNeedRevision) {
-        data = data.filter(d => (d.need_revise));
+        data = data.filter((d) => d.need_revise);
       }
-      data = data.filter(d => (this.typeFilter == "all" ? true : d.type === this.typeFilter));
+      data = data.filter((d) =>
+        this.typeFilter == "all" ? true : d.type === this.typeFilter
+      );
+      data = data.filter((d) => this.categoryFilter == "uncategorized" ? true : this.categoryFilter === d.category);
       return data;
-    }
+    },
   },
 };
 </script>

@@ -7,6 +7,9 @@
       label-width="120px"
       style="width: 100%"
     >
+      <el-form-item label="Category" prop="category">
+        <CategorySelector ref="categorySelector" />
+      </el-form-item>
       <el-form-item label="Question" prop="q">
         <el-input
           class="input-element"
@@ -49,8 +52,13 @@
 </template>
 
 <script>
-import { auth, db } from "./../../firebase";
+import { db } from "./../../firebase";
+import CategorySelector from "@/components/CategorySelector";
+import { pushCategory, addQA } from "@/controllers/dbController";
 export default {
+  components: {
+    CategorySelector,
+  },
   data() {
     return {
       qa_form: {
@@ -78,35 +86,28 @@ export default {
   },
   methods: {
     submit() {
-      var user = auth.currentUser;
+      var user = sessionStorage.getItem("user");
       if (user) {
-        this.$refs.qa_form.validate((valid) => {
+        this.$refs.qa_form.validate(async (valid) => {
           if (valid) {
             var q = this.qa_form.q;
             var a = this.qa_form.a;
-            db.collection("users")
-              .doc(user.uid)
-              .collection("m")
-              .add({
-                type: "q_a",
-                q: q,
-                a: a,
-                title: "",
-                link: "",
-                created_on: new Date().toISOString(),
-                revised: 8,
-              })
-              .then(() => {
-                this.$message.success(
-                  "Your memory has been successfully recorded!"
-                );
-                this.$refs.qa_form.resetFields();
-              })
-              .catch((err) => {
-                var errorCode = err.code;
-                var errorMessage = err.message;
-                this.$message.error(errorCode + ": " + errorMessage);
-              });
+            var category = this.$refs.categorySelector.category;
+            var result = await pushCategory(user, category);
+            if (!result.success) {
+              this.$message.error(`${result.code}: ${result.data}`);
+            }
+            result = await addQA(user, q, a, category);
+            if (result.success) {
+              this.$message.success(
+                "Your memory has been successfully recorded!"
+              );
+              this.$refs.qa_form.resetFields();
+            } else {
+              var errorCode = err.code;
+              var errorMessage = err.message;
+              this.$message.error(errorCode + ": " + errorMessage);
+            }
           }
         });
       } else {
@@ -136,5 +137,4 @@ export default {
   font-weight: 700;
   margin-right: 10px;
 }
-
 </style>

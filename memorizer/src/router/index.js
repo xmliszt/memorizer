@@ -9,15 +9,18 @@ import Memory from '../views/Memory.vue'
 import Revision from '../views/Revision.vue'
 import Donezo from '../components/Donezo.vue'
 
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+
 Vue.use(VueRouter)
 
-const routes = [
-  {
+const routes = [{
     path: '/',
     name: 'Home',
     component: Home,
-    children: [
-      {
+    children: [{
         path: 'link',
         name: 'Link',
         component: LinkInput

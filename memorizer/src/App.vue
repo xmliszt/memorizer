@@ -40,6 +40,10 @@ iframe {
   -ms-box-sizing: border-box;
 }
 
+.el-select .el-input.is-focus .el-input__inner {
+  border-color: #f56c6c !important;
+}
+
 textarea,
 .el-textarea__inner,
 .el-tooltip__popper,

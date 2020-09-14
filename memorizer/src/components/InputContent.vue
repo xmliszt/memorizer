@@ -57,6 +57,7 @@ export default {
 }
 
 .option-holder {
+  display: inline-flex;
   z-index: 999;
 }
 
