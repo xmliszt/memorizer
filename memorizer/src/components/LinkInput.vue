@@ -74,13 +74,6 @@ export default {
           { required: true, message: "Link cannot be empty", trigger: "blur" },
           { type: "url", message: "Invalid link", trigger: "blur" },
         ],
-        category: [
-          {
-            required: true,
-            message: "Category cannot be empty",
-            trigger: "blur",
-          },
-        ],
       },
     };
   },
