@@ -261,7 +261,7 @@ export async function getNextDocID(doc_id, category) {
       var obj_nextDate = moment(obj.next_date, formatter);
       var revised = obj.revised;
       var today = moment(new Date().toISOString());
-      return (obj_nextDate.isBefore(today) && revised > 0 && (obj.category === category || !obj.category));
+      return (obj_nextDate.isBefore(today) && revised > 0 && (obj.category === category || category === "All"));
     });
     var doc_idx = sortedUnrevisedMemory.findIndex(obj => obj.id == doc_id);
     if (doc_idx >= 0) {

@@ -153,8 +153,8 @@ export default {
       loading: false,
       showOnlyNeedRevision: false,
       typeFilter: "all",
-      categoryFilter: "uncategorized",
-      categories: ["uncategorized"],
+      categoryFilter: "All",
+      categories: [],
       types: [
         {
           value: "q_a",
@@ -210,7 +210,7 @@ export default {
         var cateogry_result = await getCategory(user);
         this.loading = false;
         if (cateogry_result.success) {
-          this.categories = cateogry_result.data;
+          this.categories = ["All"].concat(cateogry_result.data);
         } else {
           this.$message.error(
             `${category_result.code}: ${cateogry_result.data}`
