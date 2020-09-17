@@ -6,22 +6,27 @@
     </div>
     <div class="memory-table" v-show="!empty">
       <div class="action-panel">
-        <el-select
-          v-model="categoryFilter"
-          placeholder="Category"
-          size="mini"
-          style="width: 150px; margin-right: 15px"
-        >
-          <el-option v-for="item in categories" :key="item" :label="item" :value="item"></el-option>
-        </el-select>
-        <el-select v-model="typeFilter" placeholder="Type" size="mini" style="margin-right: 15px">
-          <el-option
-            v-for="item in types"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
+        <el-tooltip content="Select category" effect="dark" placement="top">
+          <el-select
+            v-model="categoryFilter"
+            placeholder="Category"
+            size="mini"
+            style="width: 150px; margin-right: 15px"
+          >
+            <el-option v-for="item in categories" :key="item" :label="item" :value="item"></el-option>
+          </el-select>
+        </el-tooltip>
+        <el-tooltip content="Select type of memory" effect="dark" placement="top">
+          <el-select v-model="typeFilter" placeholder="Type" size="mini" style="margin-right: 15px">
+            <el-option
+              v-for="item in types"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-tooltip>
+
         <el-switch
           style="display: block"
           v-model="showOnlyNeedRevision"
@@ -262,9 +267,7 @@ export default {
         this.typeFilter == "all" ? true : d.type === this.typeFilter
       );
       data = data.filter((d) =>
-        this.categoryFilter == "uncategorized"
-          ? true
-          : this.categoryFilter === d.category
+        this.categoryFilter == "All" ? true : this.categoryFilter === d.category
       );
       return data;
     },
