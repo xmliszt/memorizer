@@ -214,7 +214,7 @@ export default {
       loading: false,
       showOnlyNeedRevision: false,
       typeFilter: "all",
-      categoryFilter: "All",
+      categoryFilter: "ongoing",
       categories: [],
       searchText: "",
       types: [
@@ -272,7 +272,7 @@ export default {
         var cateogry_result = await getCategory(user);
         this.loading = false;
         if (cateogry_result.success) {
-          this.categories = ["All"].concat(cateogry_result.data);
+          this.categories = ["All", "completed", "ongoing"].concat(cateogry_result.data);
         } else {
           this.$message.error(
             `${category_result.code}: ${cateogry_result.data}`
@@ -324,8 +324,12 @@ export default {
       data = data.filter((d) =>
         this.typeFilter == "all" ? true : d.type === this.typeFilter
       );
-      data = data.filter((d) =>
-        this.categoryFilter == "All" ? true : this.categoryFilter === d.category
+      data = data.filter((d) => {
+        if (this.categoryFilter === "All") return true;
+        else if (this.categoryFilter === "completed") return d.revised === 0;
+        else if (this.categoryFilter === "ongoing") return d.revised > 0;
+        else return this.categoryFilter === d.category;
+      }
       );
       data = data.filter((d) => searchFilter(this.searchText, d));
       this.loading = false;
