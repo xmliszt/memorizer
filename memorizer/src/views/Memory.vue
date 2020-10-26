@@ -6,6 +6,13 @@
     </div>
     <div class="memory-table" v-show="!empty">
       <div class="action-panel">
+        <el-input
+          placeholder="Search for a memory..."
+          v-model="searchText"
+          size="mini"
+          style="width: 300px; margin-right: 15px"
+          clearable
+        ></el-input>
         <el-tooltip content="Select category" effect="dark" placement="top">
           <el-select
             v-model="categoryFilter"
@@ -13,11 +20,25 @@
             size="mini"
             style="width: 150px; margin-right: 15px"
           >
-            <el-option v-for="item in categories" :key="item" :label="item" :value="item"></el-option>
+            <el-option
+              v-for="item in categories"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
           </el-select>
         </el-tooltip>
-        <el-tooltip content="Select type of memory" effect="dark" placement="top">
-          <el-select v-model="typeFilter" placeholder="Type" size="mini" style="margin-right: 15px">
+        <el-tooltip
+          content="Select type of memory"
+          effect="dark"
+          placement="top"
+        >
+          <el-select
+            v-model="typeFilter"
+            placeholder="Type"
+            size="mini"
+            style="margin-right: 15px"
+          >
             <el-option
               v-for="item in types"
               :key="item.value"
@@ -37,7 +58,7 @@
       <el-table
         ref="memoryTable"
         :data="displayMemoryData"
-        style="width: 100%; font-size: 12px;"
+        style="width: 100%; font-size: 12px"
         height="55vh"
         max-height="55vh"
         size="mini"
@@ -45,7 +66,7 @@
         <el-table-column label="S/N" width="80" sortable>
           <template slot-scope="scope">
             <el-tooltip effect="dark" placement="right" :content="scope.row.id">
-              <span>{{scope.row.index}}</span>
+              <span>{{ scope.row.index }}</span>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -56,9 +77,23 @@
           sortable
           :sort-method="sortPrevDate"
         ></el-table-column>
-        <el-table-column prop="type" label="Type" width="100" sortable></el-table-column>
-        <el-table-column prop="category" label="Category" width="150" sortable></el-table-column>
-        <el-table-column label="Question / Title" max-width="500px" min-width="150">
+        <el-table-column
+          prop="type"
+          label="Type"
+          width="100"
+          sortable
+        ></el-table-column>
+        <el-table-column
+          prop="category"
+          label="Category"
+          width="150"
+          sortable
+        ></el-table-column>
+        <el-table-column
+          label="Question / Title"
+          max-width="500px"
+          min-width="150"
+        >
           <template slot-scope="scope">
             <textarea
               disabled
@@ -74,7 +109,11 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="Answer / Link" max-width="500px" min-width="150">
+        <el-table-column
+          label="Answer / Link"
+          max-width="500px"
+          min-width="150"
+        >
           <template slot-scope="scope">
             <textarea
               class="brief-answer"
@@ -83,11 +122,18 @@
               :value="scope.row.a"
             />
             <div v-if="scope.row.type === 'link'">
-              <a :href="scope.row.link" type="info" target="_blank">Click to open link</a>
+              <a :href="scope.row.link" type="info" target="_blank"
+                >Click to open link</a
+              >
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="Next Revision" width="240" sortable :sort-method="sortNextDate">
+        <el-table-column
+          label="Next Revision"
+          width="240"
+          sortable
+          :sort-method="sortNextDate"
+        >
           <template slot-scope="scope">
             <span v-if="scope.row.need_revise">
               <strong>{{ scope.row.next_date }}</strong>
@@ -95,7 +141,12 @@
             <span v-else>{{ scope.row.next_date }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="revised" label="R" width="80" sortable></el-table-column>
+        <el-table-column
+          prop="revised"
+          label="R"
+          width="80"
+          sortable
+        ></el-table-column>
         <el-table-column label="Revise" min-width="100">
           <template slot-scope="scope">
             <el-tooltip effect="dark" content="Time to revise" placement="left">
@@ -110,7 +161,11 @@
             </el-tooltip>
             <el-tooltip
               effect="dark"
-              :content="scope.row.revised > 0 ? 'Wait for next round of revision' : 'All done!'"
+              :content="
+                scope.row.revised > 0
+                  ? 'Wait for next round of revision'
+                  : 'All done!'
+              "
               placement="left"
             >
               <el-button
@@ -148,6 +203,7 @@ import {
   getNextDocID,
   getCategory,
 } from "@/controllers/dbController";
+import { searchFilter } from '../controllers/helper';
 import router from "@/router";
 import moment from "moment";
 export default {
@@ -160,6 +216,7 @@ export default {
       typeFilter: "all",
       categoryFilter: "All",
       categories: [],
+      searchText: "",
       types: [
         {
           value: "q_a",
@@ -259,6 +316,7 @@ export default {
   },
   computed: {
     displayMemoryData() {
+      this.loading = true;
       var data = this.memoryData;
       if (this.showOnlyNeedRevision) {
         data = data.filter((d) => d.need_revise);
@@ -269,6 +327,8 @@ export default {
       data = data.filter((d) =>
         this.categoryFilter == "All" ? true : this.categoryFilter === d.category
       );
+      data = data.filter((d) => searchFilter(this.searchText, d));
+      this.loading = false;
       return data;
     },
   },
