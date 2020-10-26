@@ -1,5 +1,5 @@
 # Memorizer
-**Version 1.0.0**
+**Version 1.0.2**
 
 The manager of your fading memories.
 https://xmliszt.github.io/memorizer
@@ -11,6 +11,9 @@ You can create two types of revision cards:
 
 1. Q&A: the standard type of revision card that provides a question and an answer.
 2. Link: special revision card which accepts a valid URL as the resource. When you revise this kind of card, simply click the link to be directed to the source. **If your link is a YouTube video link, it can be played on the website itself as embedded link**
+
+## What's New!
+- Added search bar for memories. Now you can search to find the memory you want quickly!
 
 ## How to use Memorizer?
 Here is a detailed screenshoted examples to guide you through the application:
