@@ -65,8 +65,7 @@ export default {
     accessMemory() {
       var user = sessionStorage.getItem("user");
       if (user) {
-        var uid = user.uid;
-        router.push("/memory/" + uid);
+        router.push("/memory");
       } else {
         this.signInVisible = true;
       }

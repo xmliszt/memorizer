@@ -43,7 +43,7 @@ const routes = [{
     component: Login
   },
   {
-    path: '/memory/:uid',
+    path: '/memory',
     name: 'Memory',
     component: Memory
   },
