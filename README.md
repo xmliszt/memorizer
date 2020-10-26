@@ -14,6 +14,7 @@ Version 1.0.1
 Version 1.0.2
 
 - Added search bar for memories. Now you can search to find the memory you want quickly!
+- Added "ongoing" and "completed" category filter. You can show your completed memories and incompleted memories separately!
 
 ## Introduction
 
