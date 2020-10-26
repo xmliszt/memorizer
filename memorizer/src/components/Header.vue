@@ -63,7 +63,7 @@ export default {
         });
     },
     accessMemory() {
-      var user = app.auth().currentUser;
+      var user = sessionStorage.getItem("user");
       if (user) {
         var uid = user.uid;
         router.push("/memory/" + uid);
@@ -76,6 +76,7 @@ export default {
         .auth()
         .signOut()
         .then(() => {
+          sessionStorage.removeItem("user");
           this.$message.success("Sign out successfully!");
           router.push({name: "Home"});
         })
